@@ -1,0 +1,38 @@
+import scrapy
+import json
+
+
+class CategoriesSpider(scrapy.Spider):
+
+    custom_settings = {
+        'LOG_LEVEL': 'ERROR',
+    }
+
+    name = 'categories'
+    start_urls = ['https://www.komputronik.pl']
+
+    def parse(self, response):
+        categories = {}
+
+        main_menu = response.css('ul.menu-tree-new')
+        for main_category in main_menu.xpath('./li'):
+            if main_category.css('a::text').get() == 'Usługi':
+                continue
+            categories[main_category.css('a::text').get()] = {}
+            for sub_category in main_category.xpath('./ul/li'):
+
+                sub_sub_categories = []
+                for sub_sub_category in sub_category.xpath('./ul/li'):
+                    if 'category' in sub_sub_category.css('a::attr(href)').get():
+                        sub_sub_categories.append(
+                            f"https://www.komputronik.pl{sub_sub_category.css('a::attr(href)').get()}")
+
+                if len(sub_sub_categories) == 0:
+                    continue
+
+                categories[main_category.css('a::text').get()].update({
+                    sub_category.css('a::text').get(): sub_sub_categories
+                })
+
+        with open('categories.json', 'w') as f:
+            json.dump(categories, f, indent=4, ensure_ascii=False)

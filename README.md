@@ -9,9 +9,11 @@
 
 1. Install Python on your machine.
 2. Move to the `scraper` directory.
+
    ```sh
    cd scraper
    ```
+
 3. Install virtual environment and packages.
 
    ```sh
@@ -21,10 +23,12 @@
    ```
 
 4. Run scraper for categories and products.
+
    ```sh
    scrapy crawl categories
    scrapy crawl products
    ```
+
 5. Results will be saved in `scraper` directory.
 
 ## AUTHORS:
