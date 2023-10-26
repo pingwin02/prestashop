@@ -4,3 +4,5 @@ venv
 .idea
 website/src
 website/database
+website/secrets.json
+*.tar.gz
