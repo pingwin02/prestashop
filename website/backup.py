@@ -23,7 +23,7 @@ def convert_bytes(byte_size):
 
 def create_tar_archive():
     print('Creating tar archive...')
-    os.system(f'sudo tar -czf {FILENAME} src database')
+    os.system(f'sudo tar czf {FILENAME} src database')
 
 
 def upload_to_google_drive():
@@ -70,7 +70,7 @@ def download_from_google_drive():
     print('Deleting src and database directories...')
     os.system('sudo rm -rf src database')
     print('Extracting tar archive...')
-    os.system(f'sudo tar -xzf {file["title"]}')
+    os.system(f'sudo tar xzfp {file["title"]}')
 
 
 def delete_from_google_drive():
