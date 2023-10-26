@@ -39,8 +39,13 @@
    python backup.py upload/download/delete
    ```
 
-4. Script will automatically create archive with backup and upload it to the Google Drive
-   or download it and extract to the `website` directory.
+   (FOR MACOS) After downloading and extracting data, paste this into your console:
+
+   ```
+   sudo chown -R $(id -u):$(id -g) database
+   ```
+
+4. Script will automatically create archive with backup and upload it to the Google Drive or download it and extract to the `website` directory.
 
 ## HOW TO RUN WEBSITE:
 
