@@ -6,13 +6,12 @@ services:
     image: mariadb:10.5
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=database
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=presta_database
+      - MYSQL_ROOT_PASSWORD=admin
     ports:
       - 3306
     volumes:
+      - ./db_dump:/docker-entrypoint-initdb.d
       - ./database:/var/lib/mysql
     networks:
       - prestashop_network
