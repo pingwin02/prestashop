@@ -1,5 +1,6 @@
 import os
 import sys
+import pwd
 from datetime import datetime
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
@@ -23,7 +24,15 @@ def convert_bytes(byte_size):
 
 def create_tar_archive():
     print('Creating tar archive...')
-    os.system(f'sudo tar czf {FILENAME} src database')
+    if os.system('sudo docker ps | grep mariadb') != 0:
+        print('MariaDB container is not running.')
+        print('run docker compose up -d')
+        sys.exit(1)
+
+    os.system('sudo chmod a+w db_dump')
+    os.system(
+        'docker exec mariadb mysqldump --user=root --password=admin presta_database > db_dump/db.sql')
+    os.system(f'sudo tar czf {FILENAME} src db_dump')
 
 
 def upload_to_google_drive():
@@ -68,7 +77,7 @@ def download_from_google_drive():
         os.remove(file['title'])
     file.GetContentFile(file['title'])
     print('Deleting src and database directories...')
-    os.system('sudo rm -rf src database')
+    os.system('sudo rm -rf src database db_dump')
     print('Extracting tar archive...')
     os.system(f'sudo tar xzfp {file["title"]}')
 
@@ -97,11 +106,13 @@ if __name__ == '__main__':
         sys.exit(1)
 
     OPERATION = sys.argv[1]
-    FILENAME = f'backup_{datetime.now().replace(microsecond=0).isoformat().replace(":", "-")}.tar.gz'
+    FILENAME = f'backup_{datetime.now().replace(microsecond=0).isoformat().replace(":", "-")}' + \
+        f'_{pwd.getpwuid(os.getuid())[0]}.tar.gz'
 
+    info = drive.GetAbout()
     print(
-        f"Disk usage: {convert_bytes(drive.GetAbout()['quotaBytesUsed'])} / " +
-        f"{convert_bytes(drive.GetAbout()['quotaBytesTotal'])}")
+        f"Disk usage: {convert_bytes(info['quotaBytesUsed'])} / " +
+        f"{convert_bytes(info['quotaBytesTotal'])}")
 
     if OPERATION == 'upload':
         upload_to_google_drive()

@@ -39,11 +39,7 @@
    python backup.py upload/download/delete
    ```
 
-   (FOR MACOS) After downloading and extracting data, paste this into your console:
-
-   ```
-   sudo chown -R $(id -u):$(id -g) database
-   ```
+   To upload backup make sure that `mariadb` container is running.
 
 4. Script will automatically create archive with backup and upload it to the Google Drive or download it and extract to the `website` directory.
 
@@ -59,7 +55,7 @@
 3. Create and run containers using:
 
    ```
-   docker compose up
+   docker compose up -d
    ```
 
 4. Open your web browser and go to http://localhost:8080
