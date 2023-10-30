@@ -66,6 +66,29 @@
    docker compose down
    ```
 
+6. [Optional] You may have problems with setting API key on admin panel (500 error). Then:
+   ```
+   sudo chmod -R 777 src
+   sudo rm -rf src/var/cache
+   ```
+
+7. [Optional] If you want to use API script, you may need to change this code:
+   ```
+   website/src/classes/Product.php
+   ```
+   Find line 7178
+   And replace the function with:
+   ```
+   public function getCoverWs()
+    {
+        $result = $this->getCover($this->id);
+        if (!$result) {
+            return false;
+        }
+        return $result['id_image'];
+    }
+   ```
+
 ## ADMIN PANEL:
 
 1. Open your web browser and go to http://localhost:8080/admin123

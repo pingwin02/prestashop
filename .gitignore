@@ -7,3 +7,4 @@ website/database
 website/db_dump
 website/secrets.json
 *.tar.gz
+images

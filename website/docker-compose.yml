@@ -9,7 +9,7 @@ services:
       - MYSQL_DATABASE=presta_database
       - MYSQL_ROOT_PASSWORD=admin
     ports:
-      - 3306
+      - 3306:3306
     volumes:
       - ./db_dump:/docker-entrypoint-initdb.d
       - ./database:/var/lib/mysql
