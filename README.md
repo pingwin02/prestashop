@@ -5,6 +5,7 @@
 - [TECH-STACK](#tech-stack)
 - [HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP](#how-to-uploaddownload-website-backup)
 - [HOW TO RUN WEBSITE](#how-to-run-website)
+- [HOW TO RUN API SCRIPT](#how-to-run-api-script)
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
 - [AUTHORS](#authors)
@@ -74,10 +75,10 @@
 
 ## HOW TO RUN API SCRIPT
 
-1. Move to the `website` directory.
+1. Move to the `api_service` directory.
 
    ```
-   cd website
+   cd api_service
    ```
 
 2. Install virtual environment and packages.
