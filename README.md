@@ -67,12 +67,6 @@
    docker compose down
    ```
 
-6. [Optional] You may have problems with setting API key on admin panel (500 error). Then:
-   ```
-   sudo chmod -R 777 src
-   sudo rm -rf src/var/cache
-   ```
-
 ## HOW TO RUN API SCRIPT
 
 1. Move to the `api_service` directory.
@@ -90,13 +84,14 @@
    ```
 
 3. Create new API key with the following access point:
+
    - categories
    - images
    - product_feature_values
    - product_features
    - products
 
-3. [Optional] If you want to use API script, you may need to change this code:
+4. [Optional] If you want to use API script, you may need to change this code:
    ```
    /website/src/classes/Product.php
    ```
