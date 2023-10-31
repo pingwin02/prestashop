@@ -72,7 +72,7 @@ def create_product_xml(product_data, category_id):
     product = SubElement(prestashop, "product")
 
     create_cdata_element(product, "id_category_default", "2")
-    create_cdata_element(product, "new", "1")
+    create_cdata_element(product, "new", str(randint(0, 1)))
     create_cdata_element(product, "id_tax_rules_group", "3")
     create_cdata_element(product, "type", "simple")
     create_cdata_element(product, "id_shop_default", "1")
