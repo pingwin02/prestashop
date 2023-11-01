@@ -29,7 +29,8 @@ def create_tar_archive():
         print('run docker compose up -d')
         sys.exit(1)
 
-    os.system('sudo chmod a+w db_dump')
+    os.system('sudo chmod -R 777 src db_dump')
+    os.system('sudo rm -rf src/var/cache')
     os.system(
         'docker exec mariadb mysqldump --user=root --password=admin presta_database > db_dump/db.sql')
     os.system(f'sudo tar czf {FILENAME} src db_dump')
