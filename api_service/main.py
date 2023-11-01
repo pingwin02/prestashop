@@ -319,7 +319,6 @@ def manage_products() -> None:
         products = json.loads(file.read())
 
     total = len(products)
-    total = 15
 
     with tqdm(total=total) as pbar:
         for product in products[:total]:
