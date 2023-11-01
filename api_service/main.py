@@ -105,14 +105,6 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
     create_cdata_element(product, "available_for_order", "1")
     create_cdata_element(product, "show_price", "1")
 
-    meta_description_elem = SubElement(product, "meta_description")
-    create_cdata_element_with_id(
-        meta_description_elem,
-        "language",
-        product_data["description"].split(".")[0],
-        id_="1",
-    )
-
     meta_keywords_elem = SubElement(product, "meta_keywords")
     keywords = []
     for attribute in product_data["attributes"].values():
@@ -252,28 +244,29 @@ def create_feature_value_xml(value: str, feature_id: int) -> Element:
 def create_features_and_values(attributes: Dict[str, str]) -> Dict[int, int]:
     attr_val = dict()
     for attribute, value in attributes.items():
-        feature_name = prestashop.get(
-            "product_features", options={"filter[name]": attribute}
-        )
-        if feature_name["product_features"]:
-            attr_id = feature_name["product_features"]["product_feature"]["attrs"]["id"]
-        else:
-            attr_id = prestashop.add(
-                "product_features", prettify(create_feature_xml(attribute))
+        if len(value) <= 255:
+            feature_name = prestashop.get(
+                "product_features", options={"filter[name]": attribute}
             )
-            attr_id = attr_id["prestashop"]["product_feature"]["id"]
+            if feature_name["product_features"]:
+                attr_id = feature_name["product_features"]["product_feature"]["attrs"]["id"]
+            else:
+                attr_id = prestashop.add(
+                    "product_features", prettify(create_feature_xml(attribute))
+                )
+                attr_id = attr_id["prestashop"]["product_feature"]["id"]
 
-        feature_option_name = prestashop.get(
-            "product_feature_values", options={"filter[value]": value}
-        )
-        if feature_option_name["product_feature_values"]:
-            attr_val[attr_id] = feature_option_name["product_feature_values"]["product_feature_value"]["attrs"]["id"]
-        else:
-            value_id = prestashop.add(
-                "product_feature_values",
-                prettify(create_feature_value_xml(value, attr_id)),
+            feature_option_name = prestashop.get(
+                "product_feature_values", options={"filter[value]": value}
             )
-            attr_val[attr_id] = value_id["prestashop"]["product_feature_value"]["id"]
+            if feature_option_name["product_feature_values"]:
+                attr_val[attr_id] = feature_option_name["product_feature_values"]["product_feature_value"]["attrs"]["id"]
+            else:
+                value_id = prestashop.add(
+                    "product_feature_values",
+                    prettify(create_feature_value_xml(value, attr_id)),
+                )
+                attr_val[attr_id] = value_id["prestashop"]["product_feature_value"]["id"]
     return attr_val
 
 
@@ -331,7 +324,7 @@ if __name__ == "__main__":
     prestashop = PrestaShopWebServiceDict(
         "http://localhost:8080/api", "H1C47QDSEC5G8CNCAIZ49ZN6WEQEF1QK"
     )
-    manage_categories()
+    #manage_categories()
     manage_products()
     create_stock_supplies()
 
