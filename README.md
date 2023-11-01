@@ -17,6 +17,7 @@
 3. Docker
 4. Python
 5. Scrapy
+6. Google Drive API
 
 ## HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP:
 
@@ -131,7 +132,7 @@
    scrapy crawl products
    ```
 
-5. Results will be saved in `scraper` directory.
+5. Results will be saved in `scraper_results` directory.
 
 ## AUTHORS:
 
