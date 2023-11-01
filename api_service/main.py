@@ -28,7 +28,7 @@ def create_category_xml(name: str, parent_id: int) -> Element:
 
     desc_elem = SubElement(category, "description")
     lang_elem_desc = SubElement(desc_elem, "language", id="1")
-    lang_elem_desc.text = f"my awesome {name.lower()} description"
+    lang_elem_desc.text = f"{name.lower()} description"
 
     active_elem = SubElement(category, "active")
     active_elem.text = str(1)
@@ -88,7 +88,7 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
     product = SubElement(prestashop, "product")
 
     create_cdata_element(product, "id_category_default", "2")
-    create_cdata_element(product, "new", str(randint(0, 1)))
+    create_cdata_element(product, "new", str(0))
     create_cdata_element(product, "id_tax_rules_group", "3")
     create_cdata_element(product, "type", "simple")
     create_cdata_element(product, "id_shop_default", "1")
@@ -115,10 +115,10 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
 
     meta_keywords_elem = SubElement(product, "meta_keywords")
     keywords = []
-    for attribute in product_data["attributes"]:
+    for attribute in product_data["attributes"].values():
         keywords.append(attribute)
     create_cdata_element_with_id(
-        meta_keywords_elem, "language", " ".join(keywords), id_="1"
+        meta_keywords_elem, "language", " ".join(keywords[:4]), id_="1"
     )
 
     meta_title_elem = SubElement(product, "meta_title")
@@ -319,6 +319,7 @@ def manage_products() -> None:
         products = json.loads(file.read())
 
     total = len(products)
+    total = 15
 
     with tqdm(total=total) as pbar:
         for product in products[:total]:
@@ -326,8 +327,6 @@ def manage_products() -> None:
             product_id = create_product(product, feature_ids)
             create_image(product["images"], product_id, product["id"])
             pbar.update(1)
-        create_stock_supplies()
-
 
 if __name__ == "__main__":
     prestashop = PrestaShopWebServiceDict(
@@ -335,3 +334,5 @@ if __name__ == "__main__":
     )
     manage_categories()
     manage_products()
+    create_stock_supplies()
+
