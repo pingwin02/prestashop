@@ -9,12 +9,16 @@ class ProductsSpider(scrapy.Spider):
     custom_settings = {
         'LOG_LEVEL': 'ERROR',
         'FEEDS': {
-            'products.json': {
+            '../scraper_results/products.json': {
                 'format': 'json',
                 'encoding': 'utf8',
                 'indent': 4,
                 'overwrite': True,
             },
+        },
+        'IMAGES_STORE': '../scraper_results/images',
+        'ITEM_PIPELINES': {
+            'scraper.pipelines.ProductImagePipeline': 1,
         },
     }
 
@@ -26,7 +30,7 @@ class ProductsSpider(scrapy.Spider):
 
     def __init__(self):
         # get start urls from categories.json
-        with open('categories.json', 'r') as f:
+        with open('../scraper_results/categories.json', 'r') as f:
             categories = json.load(f)
 
         for main_category in categories:
@@ -90,13 +94,14 @@ class ProductsSpider(scrapy.Spider):
             product['attributes'][category.strip(
             )] = value.strip().replace("\n", " ")
 
-        product['images'] = []
+        product['image_urls'] = []
         image_link = response.css(
             "ktr-gallery > div > div > section > div > ol > li > div > img::attr(src)").get()
 
-        for i in range(1, 6):
-            link = image_link.replace("1.jpg", f"{i}.jpg")
-            product['images'].append(link)
+        for i in range(2):
+            link = image_link.replace(
+                "/6/", "/11/").replace("1.jpg", f"{i+1}.jpg")
+            product['image_urls'].append(link)
 
         self.counter += 1
         yield product

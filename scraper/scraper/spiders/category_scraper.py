@@ -1,5 +1,6 @@
 import scrapy
 import json
+import os
 
 
 class CategoriesSpider(scrapy.Spider):
@@ -34,5 +35,8 @@ class CategoriesSpider(scrapy.Spider):
                     sub_category.css('a::text').get(): sub_sub_categories
                 })
 
-        with open('categories.json', 'w') as f:
+        if not os.path.exists('../scraper_results'):
+            os.makedirs('../scraper_results')
+
+        with open('../scraper_results/categories.json', 'w') as f:
             json.dump(categories, f, indent=4, ensure_ascii=False)

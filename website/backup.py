@@ -2,8 +2,8 @@ import os
 import sys
 import pwd
 from datetime import datetime
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
 
 gauth = GoogleAuth()
@@ -11,6 +11,11 @@ scope = ["https://www.googleapis.com/auth/drive"]
 gauth.credentials = ServiceAccountCredentials.from_json_keyfile_name(
     'secrets.json', scope)
 drive = GoogleDrive(gauth)
+
+FILENAME = f'backup_{datetime.now().replace(microsecond=0).isoformat().replace(":", "-")}' + \
+    f'_{pwd.getpwuid(os.getuid())[0]}.tar.gz'
+IMAGES_FILENAME = f'images_{datetime.now().replace(microsecond=0).isoformat().replace(":", "-")}' + \
+    f'_{pwd.getpwuid(os.getuid())[0]}.tar.gz'
 
 
 def convert_bytes(byte_size):
@@ -22,8 +27,74 @@ def convert_bytes(byte_size):
     return "{:.2f} {}".format(byte_size, unit)
 
 
-def create_tar_archive():
+def create_tar(filename, directories, change_dir=False):
     print('Creating tar archive...')
+    if change_dir:
+        os.system(
+            f'sudo tar -C {change_dir} -czf {filename} {" ".join(directories)}')
+    else:
+        os.system(f'sudo tar czf {filename} {" ".join(directories)}')
+
+
+def extract_tar(filename):
+    print('Extracting tar archive...')
+    os.system(f'sudo tar xzfp {filename}')
+
+
+def upload_to_google_drive(filename):
+    file = drive.CreateFile({'title': filename})
+    file.SetContentFile(f'{filename}')
+    print(f'Uploading {filename}...')
+    file.Upload()
+    print(f'Uploaded {filename} to Google Drive.')
+
+
+def list_files_in_google_drive():
+    file_list = drive.ListFile().GetList()
+    if len(file_list) == 0:
+        print('No files found on Google Drive.')
+        sys.exit(1)
+    file_list.sort(key=lambda x: x['createdDate'], reverse=True)
+    for i, file in enumerate(file_list):
+        print(f"[{i}] {file['title']} - {convert_bytes(file['fileSize'])}")
+    return file_list
+
+
+def download_from_google_drive():
+    file_list = list_files_in_google_drive()
+    index = int(
+        input('Enter id of the file to download (default: 0): ') or 0)
+    if index < 0 or index >= len(file_list):
+        print('Invalid id.')
+        sys.exit(1)
+    file = file_list[index]
+    print(f'Downloading {file["title"]}...')
+    if not os.path.exists(file['title']):
+        file.GetContentFile(file['title'])
+    else:
+        print(f'{file["title"]} already exists. Skipping download.')
+
+    if file['title'].startswith('backup'):
+        extract_website_backup(file['title'])
+    elif file['title'].startswith('images'):
+        extract_images_backup(file['title'])
+
+
+def delete_from_google_drive():
+    file_list = list_files_in_google_drive()
+    index = int(
+        input('Enter id of the file to delete (default: 0): ') or 0)
+    if index < 0 or index >= len(file_list):
+        print('Invalid id.')
+        sys.exit(1)
+    file = file_list[index]
+    print(f'Deleting {file["title"]}...')
+    file.Delete()
+    print(f'Deleted {file["title"]} from Google Drive.')
+
+
+def upload_website_backup():
+    print('Checking if MariaDB container is running...')
     if os.system('sudo docker ps | grep mariadb') != 0:
         print('MariaDB container is not running.')
         print('run docker compose up -d')
@@ -32,71 +103,32 @@ def create_tar_archive():
     os.system('sudo chmod -R 777 src db_dump')
     os.system(
         'docker exec mariadb mysqldump --user=root --password=admin presta_database > db_dump/db.sql')
-    os.system(f'sudo tar czf {FILENAME} src db_dump')
+    create_tar(FILENAME, ['src', 'db_dump'])
+    upload_to_google_drive(FILENAME)
+    option = input('Delete created archive? (y/n): ')
+    if option == 'y':
+        os.system(f'sudo rm -rf {FILENAME}')
 
 
-def upload_to_google_drive():
-
-    create_tar_archive()
-    file = drive.CreateFile({'title': FILENAME})
-    file.SetContentFile(f'{FILENAME}')
-    print('Uploading file to Google Drive...')
-    file.Upload()
-    print(f'Uploaded {FILENAME} to Google Drive.')
-
-
-def list_files_in_google_drive():
-
-    file_list = drive.ListFile().GetList()
-
-    if len(file_list) == 0:
-        print('No files found on Google Drive.')
-        sys.exit(1)
-    file_list.sort(key=lambda x: x['createdDate'], reverse=True)
-
-    for i, file in enumerate(file_list):
-        print(f"[{i}] {file['title']} - {convert_bytes(file['fileSize'])}")
-
-    return file_list
-
-
-def download_from_google_drive():
-
-    file_list = list_files_in_google_drive()
-
-    index = int(
-        input('Enter id of the file to download (default: 0): ') or 0)
-
-    if index < 0 or index >= len(file_list):
-        print('Invalid id.')
-        sys.exit(1)
-
-    file = file_list[index]
-    print('Downloading file from Google Drive...')
-    if os.path.exists(file['title']):
-        os.remove(file['title'])
-    file.GetContentFile(file['title'])
-    print('Deleting src and database directories...')
+def extract_website_backup(filename):
+    print('Deleting src, database and db_dump directories...')
     os.system('sudo rm -rf src database db_dump')
-    print('Extracting tar archive...')
-    os.system(f'sudo tar xzfp {file["title"]}')
+    extract_tar(filename)
 
 
-def delete_from_google_drive():
+def upload_images_backup():
+    create_tar(IMAGES_FILENAME, ['images'], change_dir='../scraper_results')
+    upload_to_google_drive(IMAGES_FILENAME)
+    option = input('Delete created archive? (y/n): ')
+    if option == 'y':
+        os.system(f'sudo rm -rf {IMAGES_FILENAME}')
 
-    file_list = list_files_in_google_drive()
 
-    index = int(
-        input('Enter id of the file to delete (default: 0): ') or 0)
-
-    if index < 0 or index >= len(file_list):
-        print('Invalid id.')
-        sys.exit(1)
-
-    file = file_list[index]
-    print('Deleting file from Google Drive...')
-    file.Delete()
-    print(f'Deleted {file["title"]} from Google Drive.')
+def extract_images_backup(filename):
+    print('Deleting images directory...')
+    os.system('sudo rm -rf ../scraper_results/images')
+    extract_tar(filename)
+    os.system('sudo mv images ../scraper_results/')
 
 
 if __name__ == '__main__':
@@ -106,8 +138,6 @@ if __name__ == '__main__':
         sys.exit(1)
 
     OPERATION = sys.argv[1]
-    FILENAME = f'backup_{datetime.now().replace(microsecond=0).isoformat().replace(":", "-")}' + \
-        f'_{pwd.getpwuid(os.getuid())[0]}.tar.gz'
 
     info = drive.GetAbout()
     print(
@@ -115,10 +145,16 @@ if __name__ == '__main__':
         f"{convert_bytes(info['quotaBytesTotal'])}")
 
     if OPERATION == 'upload':
-        upload_to_google_drive()
+        print('[0] CREATE AND UPLOAD WEBSITE BACKUP')
+        print('[1] CREATE AND UPLOAD IMAGES BACKUP')
+        option = int(input('Enter option (default: 0): ') or 0)
+        if option == 0:
+            upload_website_backup()
+        elif option == 1:
+            upload_images_backup()
     elif OPERATION == 'download':
         download_from_google_drive()
     elif OPERATION == 'delete':
         delete_from_google_drive()
     else:
-        print('Invalid operation. Please specify either upload or download.')
+        print('Invalid operation. Please specify either upload, download or delete.')

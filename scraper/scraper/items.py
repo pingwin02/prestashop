@@ -14,5 +14,5 @@ class ScraperItem(scrapy.Item):
     category = scrapy.Field()
     description = scrapy.Field()
     attributes = scrapy.Field()
-    images = scrapy.Field()
+    image_urls = scrapy.Field()
     pass
