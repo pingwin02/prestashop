@@ -21,6 +21,8 @@ services:
     image: prestashop/prestashop:1.7.8-apache
     restart: unless-stopped
     user: root
+    environment:
+      - PS_DEV_MODE=1
     depends_on:
       - mariadb
     ports:

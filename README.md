@@ -83,29 +83,10 @@
    pip install -r requirements.txt
    ```
 
-3. Create new API key with the following access point:
+3. Run script using:
 
-   - categories
-   - images
-   - product_feature_values
-   - product_features
-   - products
-
-4. [Optional] If you want to use API script, you may need to change this code:
    ```
-   /website/src/classes/Product.php
-   ```
-   Find line 7178
-   And replace the function with:
-   ```
-   public function getCoverWs()
-    {
-        $result = $this->getCover($this->id);
-        if (!$result) {
-            return false;
-        }
-        return $result['id_image'];
-    }
+   python main.py
    ```
 
 ## ADMIN PANEL:
