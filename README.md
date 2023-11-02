@@ -134,6 +134,29 @@
 
 5. Results will be saved in `scraper_results` directory.
 
+## RUN SELENIUM TESTS:
+
+1. Install Python on your machine.
+2. Move to the `selenium_tests` directory.
+
+   ```
+   cd selenium_tests
+   ```
+
+3. Install virtual environment and packages.
+
+   ```
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+4. Run tests.
+
+   ```
+   python main.py
+   ```
+
 ## AUTHORS:
 
 - Maciej Szefler - 188614
