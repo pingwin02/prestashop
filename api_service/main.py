@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import traceback
 from typing import Dict, List
 import re
 from xml.etree.ElementTree import Element, SubElement, tostring
@@ -100,9 +101,11 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
         product, "supplier_reference", product_data["attributes"].get(
             "Producent", "")
     )
+
     create_cdata_element(product, "state", "1")
-    create_cdata_element(product, "price", product_data["price"])
-    create_cdata_element(product, "unit_price", product_data["price"])
+    price = str(round(float(product_data["price"])/1.23, 2))
+    create_cdata_element(product, "price", price)
+    create_cdata_element(product, "unit_price", price)
     create_cdata_element(product, "active", "1")
     create_cdata_element(product, "minimal_quantity", "1")
     create_cdata_element(product, "available_for_order", "1")
@@ -247,8 +250,8 @@ def create_feature_value_xml(value: str, feature_id: int) -> Element:
 def create_features_and_values(attributes: Dict[str, str]) -> Dict[int, int]:
     attr_val = dict()
     for attribute, value in attributes.items():
-        attribute = re.sub(r"\[.*?\]", "", attribute)
-        value = re.sub(r"\[.*?\]", "", value)
+        attribute = re.sub(r"\[.*?\]|<|>", "", attribute)
+        value = re.sub(r"\[.*?\]|<|>", "", value)
         if len(value) <= 255:
             feature_name = prestashop.get(
                 "product_features", options={"filter[name]": attribute}
@@ -294,12 +297,18 @@ def manage_categories() -> None:
 
     with tqdm(total=total) as pbar:
         for category in categories:
-            parent_id = create_category(category, index)
-            pbar.update(1)
-
-            for subcategory in categories[category]:
-                create_category(subcategory, parent_id)
+            try:
+                parent_id = create_category(category, index)
                 pbar.update(1)
+
+                for subcategory in categories[category]:
+                    create_category(subcategory, parent_id)
+                    pbar.update(1)
+            except Exception as e:
+                with open("venv/error_log.txt", "a") as file:
+                    file.write(
+                        f"Error while adding category: {category}\n")
+                    file.write(f"{traceback.format_exc()}\n")
 
 
 def manage_products() -> None:
@@ -330,10 +339,16 @@ def manage_products() -> None:
 
     with tqdm(total=total) as pbar:
         for product in products[0:total]:
-            feature_ids = create_features_and_values(product["attributes"])
-            product_id = create_product(product, feature_ids)
-            create_image(product["image_urls"], product_id, product["id"])
-            pbar.update(1)
+            try:
+                feature_ids = create_features_and_values(product["attributes"])
+                product_id = create_product(product, feature_ids)
+                create_image(product["image_urls"], product_id, product["id"])
+                pbar.update(1)
+            except Exception as e:
+                with open("venv/error_log.txt", "a") as file:
+                    file.write(
+                        f"Error while adding product id: {product['id']}\n")
+                    file.write(f"{traceback.format_exc()}\n")
 
 
 if __name__ == "__main__":
