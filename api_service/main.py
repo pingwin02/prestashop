@@ -90,7 +90,7 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
 
     create_cdata_element(product, "id_category_default", "2")
     create_cdata_element(product, "new", str(0))
-    create_cdata_element(product, "id_tax_rules_group", "3")
+    create_cdata_element(product, "id_tax_rules_group", "1")
     create_cdata_element(product, "type", "simple")
     create_cdata_element(product, "id_shop_default", "1")
     create_cdata_element(product, "additional_delivery_times", "1")
@@ -330,7 +330,7 @@ def manage_products() -> None:
     total = len(products)
 
     with tqdm(total=total) as pbar:
-        for product in products[58:total]:
+        for product in products[0:total]:
             feature_ids = create_features_and_values(product["attributes"])
             product_id = create_product(product, feature_ids)
             create_image(product["image_urls"], product_id, product["id"])
