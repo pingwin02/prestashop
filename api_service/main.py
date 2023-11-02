@@ -114,7 +114,8 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
     meta_keywords_elem = SubElement(product, "meta_keywords")
     keywords = []
     for attribute in product_data["attributes"].values():
-        keywords.append(attribute)
+        if len(attribute) <= 255:
+            keywords.append(attribute)
     create_cdata_element_with_id(
         meta_keywords_elem, "language", " ".join(keywords[:4]), id_="1"
     )
@@ -134,7 +135,7 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
 
     name_elem = SubElement(product, "name")
     create_cdata_element_with_id(
-        name_elem, "language", product_data["title"], id_="1")
+        name_elem, "language", product_data["title"].replace(";", ""), id_="1")
 
     desc_elem = SubElement(product, "description")
     create_cdata_element_with_id(
@@ -158,21 +159,6 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
         feature_elem = SubElement(features, "product_feature")
         create_cdata_element(feature_elem, "id", str(feature_id))
         create_cdata_element(feature_elem, "id_feature_value", str(value_id))
-    return prestashop
-
-
-def create_stock_supplies_xml(product_id: int) -> Element:
-    prestashop = Element(
-        "prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
-    stock_available = SubElement(prestashop, "stock_available")
-
-    create_cdata_element(stock_available, "id", str(product_id))
-    create_cdata_element(stock_available, "id_product", str(product_id))
-    create_cdata_element(stock_available, "id_shop", "1")
-    create_cdata_element(stock_available, "id_product_attribute", "1")
-    create_cdata_element(stock_available, "quantity", "4")
-    create_cdata_element(stock_available, "depends_on_stock", "0")
-    create_cdata_element(stock_available, "out_of_stock", "2")
     return prestashop
 
 
@@ -252,6 +238,7 @@ def create_features_and_values(attributes: Dict[str, str]) -> Dict[int, int]:
     for attribute, value in attributes.items():
         attribute = re.sub(r"\[.*?\]|<|>", "", attribute)
         value = re.sub(r"\[.*?\]|<|>", "", value)
+        value = value.replace("=", "-")
         if len(value) <= 255:
             feature_name = prestashop.get(
                 "product_features", options={"filter[name]": attribute}
@@ -279,16 +266,16 @@ def create_features_and_values(attributes: Dict[str, str]) -> Dict[int, int]:
 
 
 def manage_categories() -> None:
+    # ids = []
+    # for category in prestashop.get("categories")["categories"]["category"]:
+    #     if int(category["attrs"]["id"]) not in [1, 2]:
+    #         ids.append(int(category["attrs"]["id"]))
+    # if ids:
+    #     print("Deleting categories...")
+    #     prestashop.delete("categories", resource_ids=ids)
+
     with open("../scraper_results/categories.json") as file:
         categories = json.loads(file.read())
-
-    ids = []
-    for category in prestashop.get("categories")["categories"]["category"]:
-        if int(category["attrs"]["id"]) not in [1, 2]:
-            ids.append(int(category["attrs"]["id"]))
-    if ids:
-        print("Deleting categories...")
-        prestashop.delete("categories", resource_ids=ids)
 
     index = 2
     total = sum(len(subcategories) for subcategories in categories.values()) + len(
@@ -312,25 +299,25 @@ def manage_categories() -> None:
 
 
 def manage_products() -> None:
-    ids = []
-    products = prestashop.get("products")["products"]
-    if products and len(products["product"]) > 2:
-        for product in prestashop.get("products")["products"]["product"]:
-            if product != "attrs":
-                ids.append(int(product["attrs"]["id"]))
-        if ids:
-            print("Deleting products...")
-            prestashop.delete("products", resource_ids=ids)
+    # ids = []
+    # products = prestashop.get("products")["products"]
+    # if products and len(products["product"]) > 2:
+    #     for product in prestashop.get("products")["products"]["product"]:
+    #         if product != "attrs":
+    #             ids.append(int(product["attrs"]["id"]))
+    #     if ids:
+    #         print("Deleting products...")
+    #         prestashop.delete("products", resource_ids=ids)
 
-    features = prestashop.get("product_features")["product_features"]
-    if features and len(features["product_feature"]) > 2:
-        ids = []
-        for feature in features["product_feature"]:
-            if feature != "attrs":
-                ids.append(int(feature["attrs"]["id"]))
-        if ids:
-            print("Deleting features...")
-            prestashop.delete("product_features", resource_ids=ids)
+    # features = prestashop.get("product_features")["product_features"]
+    # if features and len(features["product_feature"]) > 2:
+    #     ids = []
+    #     for feature in features["product_feature"]:
+    #         if feature != "attrs":
+    #             ids.append(int(feature["attrs"]["id"]))
+    #     if ids:
+    #         print("Deleting features...")
+    #         prestashop.delete("product_features", resource_ids=ids)
 
     with open("../scraper_results/products.json") as file:
         products = json.loads(file.read())
@@ -353,8 +340,8 @@ def manage_products() -> None:
 
 if __name__ == "__main__":
     prestashop = PrestaShopWebServiceDict(
-        "http://localhost:8080/api", "H1C47QDSEC5G8CNCAIZ49ZN6WEQEF1QK"
-    )
+        "http://localhost:8080/api", "H1C47QDSEC5G8CNCAIZ49ZN6WEQEF1QK")
+
     manage_categories()
     manage_products()
     create_stock_supplies()

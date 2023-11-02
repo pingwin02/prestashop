@@ -1,5 +1,7 @@
 import scrapy
 import json
+import os
+import shutil
 
 from scraper.items import ScraperItem
 
@@ -24,27 +26,25 @@ class ProductsSpider(scrapy.Spider):
 
     name = 'products'
 
-    start_urls = []
-
     counter = 0
 
-    def __init__(self):
-        # get start urls from categories.json
+    def start_requests(self):
+        if os.path.exists('../scraper_results/images'):
+            shutil.rmtree('../scraper_results/images')
+
         with open('../scraper_results/categories.json', 'r') as f:
             categories = json.load(f)
 
         for main_category in categories:
             for sub_category in categories[main_category]:
                 for sub_sub_category in categories[main_category][sub_category]:
-                    self.start_urls.append(sub_sub_category)
-        print(f"Number of sub-sub-categories: {len(self.start_urls)}")
-        print(f"Approximate number of products: ~{len(self.start_urls) * 5}")
+                    yield scrapy.Request(sub_sub_category, callback=self.parse, meta={'category': sub_category})
 
     def parse(self, response):
         for product in response.css("div.tests-product-entry")[:5]:
             product_link = product.css(
                 "h2.font-headline").css("a::attr(href)").get()
-            yield scrapy.Request(product_link, callback=self.parse_product)
+            yield scrapy.Request(product_link, callback=self.parse_product, meta={'category': response.meta['category']})
 
     def parse_product(self, response):
         print(f"Scraping product #{self.counter}", end='\r')
@@ -63,8 +63,7 @@ class ProductsSpider(scrapy.Spider):
         product['price'] = product['price'].replace(
             "\xa0", '').replace(" zł", '').replace(",", ".").strip()
 
-        product['category'] = response.css(
-            "div.tests-breadcrumbs > div:nth-child(3) > u > a::text").get().strip()
+        product['category'] = response.meta['category']
 
         product['description'] = response.css(
             "div.cc-mobile-1 > p::text").get()
