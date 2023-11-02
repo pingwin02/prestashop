@@ -2,6 +2,7 @@ import io
 import json
 import os
 from typing import Dict, List
+import re
 from xml.etree.ElementTree import Element, SubElement, tostring
 from random import randint
 import mysql.connector
@@ -185,8 +186,11 @@ def create_image(images: List[str], product_id: int, id_: str) -> None:
             img_data = requests.get(image).content
             if not os.path.exists(os.path.join(SCRIPT_DIR, f"images/{id_}/")):
                 os.makedirs(os.path.dirname(os.path.join(SCRIPT_DIR, f"images/{id_}/")))
-            with open(f"{img_name}", "wb") as handler:
-                handler.write(img_data)
+            if os.path.exists(os.path.join(SCRIPT_DIR, img_name)):
+                with open(f"{img_name}", "wb") as handler:
+                    handler.write(img_data)
+            else:
+                continue
         fd = io.open(img_name, "rb")
         content = fd.read()
         fd.close()
@@ -244,6 +248,8 @@ def create_feature_value_xml(value: str, feature_id: int) -> Element:
 def create_features_and_values(attributes: Dict[str, str]) -> Dict[int, int]:
     attr_val = dict()
     for attribute, value in attributes.items():
+        attribute = re.sub(r"\[.*?\]", "", attribute)
+        value = re.sub(r"\[.*?\]", "", value)
         if len(value) <= 255:
             feature_name = prestashop.get(
                 "product_features", options={"filter[name]": attribute}
@@ -271,7 +277,7 @@ def create_features_and_values(attributes: Dict[str, str]) -> Dict[int, int]:
 
 
 def manage_categories() -> None:
-    with open("../scraper/categories.json") as file:
+    with open("../scraper_results/categories.json") as file:
         categories = json.loads(file.read())
 
     ids = []
@@ -279,7 +285,7 @@ def manage_categories() -> None:
         if int(category["attrs"]["id"]) not in [1, 2]:
             ids.append(int(category["attrs"]["id"]))
     if ids:
-        print("Deleting...")
+        print("Deleting categories...")
         prestashop.delete("categories", resource_ids=ids)
 
     index = 2
@@ -305,19 +311,29 @@ def manage_products() -> None:
             if product != "attrs":
                 ids.append(int(product["attrs"]["id"]))
         if ids:
-            print("Deleting...")
+            print("Deleting products...")
             prestashop.delete("products", resource_ids=ids)
 
-    with open("../scraper/products.json") as file:
+    features = prestashop.get("product_features")["product_features"]
+    if features and len(features["product_feature"]) > 2:
+        ids = []
+        for feature in features["product_feature"]:
+            if feature != "attrs":
+                ids.append(int(feature["attrs"]["id"]))
+        if ids:
+            print("Deleting features...")
+            prestashop.delete("product_features", resource_ids=ids)
+
+    with open("../scraper_results/products.json") as file:
         products = json.loads(file.read())
 
     total = len(products)
 
     with tqdm(total=total) as pbar:
-        for product in products[:total]:
+        for product in products[58:total]:
             feature_ids = create_features_and_values(product["attributes"])
             product_id = create_product(product, feature_ids)
-            create_image(product["images"], product_id, product["id"])
+            create_image(product["image_urls"], product_id, product["id"])
             pbar.update(1)
 
 if __name__ == "__main__":
