@@ -7,7 +7,6 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 from random import randint
 import mysql.connector
 
-import requests
 from prestapyt import PrestaShopWebServiceDict
 from tqdm import tqdm
 
@@ -16,7 +15,8 @@ SCRIPT_DIR = os.path.dirname(__file__)
 
 
 def create_category_xml(name: str, parent_id: int) -> Element:
-    prestashop = Element("prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
+    prestashop = Element(
+        "prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
     category = Element("category")
 
     name_elem = SubElement(category, "name")
@@ -85,7 +85,8 @@ def create_cdata_element_with_id(
 
 
 def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[int, int]) -> Element:
-    prestashop = Element("prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
+    prestashop = Element(
+        "prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
     product = SubElement(prestashop, "product")
 
     create_cdata_element(product, "id_category_default", "2")
@@ -96,7 +97,8 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
     create_cdata_element(product, "additional_delivery_times", "1")
     create_cdata_element(product, "reference", product_data["id"])
     create_cdata_element(
-        product, "supplier_reference", product_data["attributes"].get("Producent", "")
+        product, "supplier_reference", product_data["attributes"].get(
+            "Producent", "")
     )
     create_cdata_element(product, "state", "1")
     create_cdata_element(product, "price", product_data["price"])
@@ -128,7 +130,8 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
     )
 
     name_elem = SubElement(product, "name")
-    create_cdata_element_with_id(name_elem, "language", product_data["title"], id_="1")
+    create_cdata_element_with_id(
+        name_elem, "language", product_data["title"], id_="1")
 
     desc_elem = SubElement(product, "description")
     create_cdata_element_with_id(
@@ -156,7 +159,8 @@ def create_product_xml(product_data: Dict, category_id: int, feature_ids: Dict[i
 
 
 def create_stock_supplies_xml(product_id: int) -> Element:
-    prestashop = Element("prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
+    prestashop = Element(
+        "prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
     stock_available = SubElement(prestashop, "stock_available")
 
     create_cdata_element(stock_available, "id", str(product_id))
@@ -174,29 +178,22 @@ def create_product(product: Dict, feature_ids: Dict[int, int]) -> int:
         "categories", options={"filter[name]": product["category"]}
     )["categories"]["category"]["attrs"]["id"]
     response = prestashop.add(
-        "products", prettify(create_product_xml(product, int(category_id), feature_ids))
+        "products", prettify(create_product_xml(
+            product, int(category_id), feature_ids))
     )
     return response["prestashop"]["product"]["id"]
 
 
 def create_image(images: List[str], product_id: int, id_: str) -> None:
     for image in images:
-        img_name = f'images/{id_}/{image.split("/")[-1]}'
-        if not os.path.isfile(os.path.join(SCRIPT_DIR, img_name)):
-            img_data = requests.get(image).content
-            if not os.path.exists(os.path.join(SCRIPT_DIR, f"images/{id_}/")):
-                os.makedirs(os.path.dirname(os.path.join(SCRIPT_DIR, f"images/{id_}/")))
-            if os.path.exists(os.path.join(SCRIPT_DIR, img_name)):
-                with open(f"{img_name}", "wb") as handler:
-                    handler.write(img_data)
-            else:
-                continue
-        fd = io.open(img_name, "rb")
-        content = fd.read()
-        fd.close()
-        prestashop.add(
-            f"/images/products/{product_id}", files=[("image", img_name, content)]
-        )
+        img_name = f'../scraper_results/images/{id_}/{image.split("/")[-1]}'
+        if os.path.exists(img_name):
+            fd = io.open(img_name, "rb")
+            content = fd.read()
+            fd.close()
+            prestashop.add(
+                f"/images/products/{product_id}", files=[("image", img_name, content)]
+            )
 
 
 def create_stock_supplies() -> None:
@@ -225,7 +222,8 @@ def create_stock_supplies() -> None:
 
 
 def create_feature_xml(attribute: str) -> Element:
-    prestashop = Element("prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
+    prestashop = Element(
+        "prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
     stock_available = SubElement(prestashop, "product_feature")
 
     create_cdata_element(stock_available, "position", str(1))
@@ -235,7 +233,8 @@ def create_feature_xml(attribute: str) -> Element:
 
 
 def create_feature_value_xml(value: str, feature_id: int) -> Element:
-    prestashop = Element("prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
+    prestashop = Element(
+        "prestashop", xmlns_xlink="http://www.w3.org/1999/xlink")
     stock_available = SubElement(prestashop, "product_feature_value")
 
     create_cdata_element(stock_available, "id_feature", str(feature_id))
@@ -336,11 +335,11 @@ def manage_products() -> None:
             create_image(product["image_urls"], product_id, product["id"])
             pbar.update(1)
 
+
 if __name__ == "__main__":
     prestashop = PrestaShopWebServiceDict(
         "http://localhost:8080/api", "H1C47QDSEC5G8CNCAIZ49ZN6WEQEF1QK"
     )
-    #manage_categories()
+    manage_categories()
     manage_products()
     create_stock_supplies()
-
