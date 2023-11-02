@@ -5,6 +5,7 @@
 - [TECH-STACK](#tech-stack)
 - [HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP](#how-to-uploaddownload-website-backup)
 - [HOW TO RUN WEBSITE](#how-to-run-website)
+- [HOW TO RUN API SCRIPT](#how-to-run-api-script)
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
 - [AUTHORS](#authors)
@@ -16,6 +17,7 @@
 3. Docker
 4. Python
 5. Scrapy
+6. Google Drive API
 
 ## HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP:
 
@@ -66,6 +68,28 @@
    docker compose down
    ```
 
+## HOW TO RUN API SCRIPT
+
+1. Move to the `api_service` directory.
+
+   ```
+   cd api_service
+   ```
+
+2. Install virtual environment and packages.
+
+   ```
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. Run script using:
+
+   ```
+   python main.py
+   ```
+
 ## ADMIN PANEL:
 
 1. Open your web browser and go to http://localhost:8080/admin123
@@ -108,7 +132,7 @@
    scrapy crawl products
    ```
 
-5. Results will be saved in `scraper` directory.
+5. Results will be saved in `scraper_results` directory.
 
 ## AUTHORS:
 
