@@ -265,14 +265,20 @@ def create_features_and_values(attributes: Dict[str, str]) -> Dict[int, int]:
     return attr_val
 
 
-def manage_categories() -> None:
-    # ids = []
-    # for category in prestashop.get("categories")["categories"]["category"]:
-    #     if int(category["attrs"]["id"]) not in [1, 2]:
-    #         ids.append(int(category["attrs"]["id"]))
-    # if ids:
-    #     print("Deleting categories...")
-    #     prestashop.delete("categories", resource_ids=ids)
+def delete_categories() -> None:
+    ids = []
+    for category in prestashop.get("categories")["categories"]["category"]:
+        if int(category["attrs"]["id"]) not in [1, 2]:
+            ids.append(int(category["attrs"]["id"]))
+    if ids:
+        print("Deleting categories...")
+        prestashop.delete("categories", resource_ids=ids)
+
+
+def manage_categories(force_remove: bool = False) -> None:
+
+    if force_remove:
+        delete_categories()
 
     with open("../scraper_results/categories.json") as file:
         categories = json.loads(file.read())
@@ -298,26 +304,32 @@ def manage_categories() -> None:
                     file.write(f"{traceback.format_exc()}\n")
 
 
-def manage_products() -> None:
-    # ids = []
-    # products = prestashop.get("products")["products"]
-    # if products and len(products["product"]) > 2:
-    #     for product in prestashop.get("products")["products"]["product"]:
-    #         if product != "attrs":
-    #             ids.append(int(product["attrs"]["id"]))
-    #     if ids:
-    #         print("Deleting products...")
-    #         prestashop.delete("products", resource_ids=ids)
+def delete_products() -> None:
+    ids = []
+    products = prestashop.get("products")["products"]
+    if products and len(products["product"]) > 2:
+        for product in prestashop.get("products")["products"]["product"]:
+            if product != "attrs":
+                ids.append(int(product["attrs"]["id"]))
+        if ids:
+            print("Deleting products...")
+            prestashop.delete("products", resource_ids=ids)
 
-    # features = prestashop.get("product_features")["product_features"]
-    # if features and len(features["product_feature"]) > 2:
-    #     ids = []
-    #     for feature in features["product_feature"]:
-    #         if feature != "attrs":
-    #             ids.append(int(feature["attrs"]["id"]))
-    #     if ids:
-    #         print("Deleting features...")
-    #         prestashop.delete("product_features", resource_ids=ids)
+    features = prestashop.get("product_features")["product_features"]
+    if features and len(features["product_feature"]) > 2:
+        ids = []
+        for feature in features["product_feature"]:
+            if feature != "attrs":
+                ids.append(int(feature["attrs"]["id"]))
+        if ids:
+            print("Deleting features...")
+            prestashop.delete("product_features", resource_ids=ids)
+
+
+def manage_products(force_remove: bool = False) -> None:
+
+    if force_remove:
+        delete_products()
 
     with open("../scraper_results/products.json") as file:
         products = json.loads(file.read())
