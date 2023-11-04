@@ -8,6 +8,7 @@
 - [HOW TO RUN API SCRIPT](#how-to-run-api-script)
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
+- [RUN SELENIUM TESTS](#run-selenium-tests)
 - [AUTHORS](#authors)
 
 ## TECH-STACK:
