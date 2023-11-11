@@ -19,7 +19,7 @@ driver = webdriver.Chrome(options=chrome_options)
 def add_to_cart() -> None:
     driver.find_element(By.CSS_SELECTOR, "#add-to-cart-or-refresh > div.product-add-to-cart.js-product-add-to-cart > "
                                          "div > div.add > button").click()
-    WebDriverWait(driver, 7).until(ec.element_to_be_clickable(
+    WebDriverWait(driver, 10).until(ec.element_to_be_clickable(
         (By.CSS_SELECTOR, "#blockcart-modal > div > div > div.modal-header > button > span > i"))).click()
 
 
@@ -54,12 +54,12 @@ def test() -> None:
         for i in range(1, 7):
             menu = driver.find_element(By.CSS_SELECTOR, "#category-2 > a")
             ActionChains(driver).move_to_element(menu).perform()
-            WebDriverWait(driver, 7).until(ec.element_to_be_clickable(
+            WebDriverWait(driver, 10).until(ec.element_to_be_clickable(
                 (By.CSS_SELECTOR, f"#category-{j} > a"))).click()
             driver.find_element(By.CSS_SELECTOR, f'#js-product-list > div.products.row > div:nth-child({i}) > article'
                                                  f' > div > div.thumbnail-top > a > img').click()
             add_to_cart()
-            if j == 5 and i == 4:
+            if j == 30 and i == 4:
                 break
 
     # b. add 1 item from search
@@ -88,11 +88,11 @@ def test() -> None:
     driver.find_element(By.CSS_SELECTOR, "#delivery-address > div > footer > button").click()
 
     # g. delivery choice
-    driver.find_element(By.CSS_SELECTOR, "#delivery_option_3").click()
+    # driver.find_element(By.CSS_SELECTOR, "#delivery_option_9").click()
     WebDriverWait(driver, 10).until(ec.element_to_be_clickable(
         (By.CSS_SELECTOR, "#js-delivery > button"))).click()
 
-    # TODO f. pay method choice - FIX
+    # f. pay method choice
     driver.find_element(By.CSS_SELECTOR, "#payment-option-2").click()
     driver.find_element(By.CSS_SELECTOR, "#conditions_to_approve\[terms-and-conditions\]").click()
 
@@ -102,10 +102,9 @@ def test() -> None:
     # i. verify order status
     driver.find_element(By.CSS_SELECTOR, "#_desktop_user_info > div > a.account > span").click()
     driver.find_element(By.CSS_SELECTOR, "#history-link > span > i").click()
-    driver.find_element(By.CSS_SELECTOR, "#content > table > tbody > tr > td.text-sm-center.order-actions > "
-                                         "a:nth-child(1)").click()
 
-    # TODO j. get VAT
+    # j. get VAT
+    driver.find_element(By.CSS_SELECTOR, "#content > table > tbody > tr > td.text-sm-center.hidden-md-down > a").click()
 
 
 if __name__ == "__main__":
