@@ -1,6 +1,7 @@
 import os
 import sys
 import pwd
+from tqdm import tqdm
 from datetime import datetime
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
@@ -68,11 +69,15 @@ def download_from_google_drive():
         print('Invalid id.')
         sys.exit(1)
     file = file_list[index]
-    print(f'Downloading {file["title"]}...')
-    if not os.path.exists(file['title']):
-        file.GetContentFile(file['title'])
-    else:
-        print(f'{file["title"]} already exists. Skipping download.')
+
+    with tqdm(total=float(file['fileSize']), unit='B', unit_scale=True, unit_divisor=1024, desc="Downloading file") as pbar:
+        def progress_callback(bytes_downloaded, total_bytes):
+            pbar.update(bytes_downloaded - pbar.n)
+
+        if not os.path.exists(file['title']):
+            file.GetContentFile(file['title'], callback=progress_callback)
+        else:
+            pbar.update(float(file['fileSize']) - pbar.n)
 
     if file['title'].startswith('backup'):
         extract_website_backup(file['title'])
