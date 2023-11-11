@@ -1,14 +1,14 @@
-import json
+import io
 import os
-import traceback
 import re
+import json
 import prestapyt
+import traceback
+import mysql.connector
 from tqdm import tqdm
 from random import randint
-import io
-import mysql.connector
-from concurrent.futures import ThreadPoolExecutor
 from threading import Semaphore
+from concurrent.futures import ThreadPoolExecutor
 
 DEFAULT_LINK = "http://localhost:8080/api/"
 SCRIPT_DIR = os.path.dirname(__file__).split("api_service")[0]
@@ -52,18 +52,12 @@ def add_features(attributes: dict) -> dict:
             feature_id = prestashop.add(
                 "product_features", feature_schema)["prestashop"]["product_feature"]["id"]
 
-        feature_option_name = prestashop.get(
-            "product_feature_values", options={"filter[value]": value}
-        )
-        if feature_option_name["product_feature_values"]:
-            feat_ids_values[feature_id] = feature_option_name["product_feature_values"]["product_feature_value"]["attrs"]["id"]
-        else:
-            feature_option_schema["product_feature_value"]["id_feature"] = feature_id
-            feature_option_schema["product_feature_value"]["value"]["language"]["value"] = value
-            feature_option_schema["product_feature_value"]["custom"] = 0
-            value_id = prestashop.add(
-                "product_feature_values", feature_option_schema)["prestashop"]["product_feature_value"]["id"]
-            feat_ids_values[feature_id] = value_id
+        feature_option_schema["product_feature_value"]["id_feature"] = feature_id
+        feature_option_schema["product_feature_value"]["value"]["language"]["value"] = value
+        feature_option_schema["product_feature_value"]["custom"] = 1
+        value_id = prestashop.add(
+            "product_feature_values", feature_option_schema)["prestashop"]["product_feature_value"]["id"]
+        feat_ids_values[feature_id] = value_id
     return feat_ids_values
 
 
@@ -145,8 +139,8 @@ def add_product(product: dict) -> None:
             for key, value in product["attributes"].items():
                 lowercase_key = key.lower()
                 if any(substring in lowercase_key for substring in ["waga", "masa"]):
-                    weight = float(re.findall(r"\d+", value)[0])
-                    if "g" in lowercase_key:
+                    weight = float(value.split(" ")[0])
+                    if " g" in value:
                         weight /= 1000
                     break
         except Exception as e:
@@ -154,6 +148,7 @@ def add_product(product: dict) -> None:
 
         if weight is None:
             weight = randint(1, 600) / 10
+        weight = round(max(weight, 0.001), 3)
 
         product_schema["product"]["weight"] = weight
         product_schema["product"]["description_short"]["language"][
@@ -164,9 +159,8 @@ def add_product(product: dict) -> None:
             "prestashop"]["product"]["id"]
         add_images_to_product(scraped_id=product["id"], product_id=product_id)
     except Exception as e:
-        with open("venv/error_log.txt", "a") as file:
-            file.write(f"Error while adding product: {product['id']}\n")
-            file.write(f"{traceback.format_exc()}\n")
+        print(f"Error while adding product: {product['id']}")
+        print(traceback.format_exc())
 
 
 def add_products(clean: bool = False) -> None:
@@ -202,7 +196,8 @@ def add_products(clean: bool = False) -> None:
     amount = len(products)
 
     with ThreadPoolExecutor(max_workers=15) as executor:
-        list(tqdm(executor.map(add_product, products), total=amount))
+        list(tqdm(executor.map(add_product, products),
+             total=amount, desc="Adding products"))
 
 
 def add_categories(clean: bool = False):
@@ -223,7 +218,7 @@ def add_categories(clean: bool = False):
     amount = sum(len(subcategories) for subcategories in
                  categories.values()) + len(categories)
 
-    with tqdm(total=amount) as pbar:
+    with tqdm(total=amount, desc="Adding categories") as pbar:
         for category in categories:
             try:
                 parent_id = add_category(category, index)
@@ -232,10 +227,8 @@ def add_categories(clean: bool = False):
                     add_category(subcategory, parent_id)
                     pbar.update(1)
             except Exception as e:
-                with open("venv/error_log.txt", "a") as file:
-                    file.write(
-                        f"Error while adding category: {category}\n")
-                    file.write(f"{traceback.format_exc()}\n")
+                print(f"Error while adding category: {category}")
+                print(traceback.format_exc())
 
 
 if __name__ == "__main__":
@@ -249,7 +242,9 @@ if __name__ == "__main__":
     product_schema = prestashop.get("products", options={
         "schema": "blank"
     })
+
     del product_schema["product"]["position_in_category"]
+    del product_schema["product"]["associations"]["combinations"]
 
     feature_schema = prestashop.get("product_features", options={
         "schema": "blank"
