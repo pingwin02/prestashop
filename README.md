@@ -8,6 +8,7 @@
 - [HOW TO RUN API SCRIPT](#how-to-run-api-script)
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
+- [RUN SELENIUM TESTS](#run-selenium-tests)
 - [AUTHORS](#authors)
 
 ## TECH-STACK:
@@ -17,7 +18,8 @@
 3. Docker
 4. Python
 5. Scrapy
-6. Google Drive API
+6. Selenium
+7. Google Drive API
 
 ## HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP:
 
@@ -133,6 +135,30 @@
    ```
 
 5. Results will be saved in `scraper_results` directory.
+
+## RUN SELENIUM TESTS:
+
+1. Install Python on your machine.
+2. Move to the `selenium_tests` directory.
+
+   ```
+   cd selenium_tests
+   ```
+
+3. Install chromedriver, virtual environment and packages.
+
+   ```
+   sudo apt install chromium-chromedriver
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+4. Run tests.
+
+   ```
+   python main.py
+   ```
 
 ## AUTHORS:
 
