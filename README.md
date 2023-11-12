@@ -9,7 +9,6 @@
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
 - [RUN SELENIUM TESTS](#run-selenium-tests)
-- [RUN SELENIUM TESTS](#run-selenium-tests)
 - [AUTHORS](#authors)
 
 ## TECH-STACK:
@@ -63,7 +62,7 @@
    docker compose up -d
    ```
 
-4. Open your web browser and go to http://localhost:8080
+4. Open your web browser and go to https://localhost
 
 5. To stop and remove containers use:
 
@@ -95,7 +94,7 @@
 
 ## ADMIN PANEL:
 
-1. Open your web browser and go to http://localhost:8080/admin123
+1. Open your web browser and go to https://localhost/admin123
 
 2. Login using:
 
