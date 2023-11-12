@@ -60,7 +60,6 @@
 
    ```
    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout prestashop.key -out prestashop.crt -subj "/C=PL/ST=Greater Poland Voivodeship/L=Poznan/O=Komputerowe Imperium Hermiony/OU=Komputerowe Imperium Hermiony/CN=localhost"
-
    ```
 
 4. Create and run containers using:
