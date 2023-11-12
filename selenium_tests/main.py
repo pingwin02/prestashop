@@ -42,7 +42,7 @@ def register_user() -> None:
     driver.find_element(By.CSS_SELECTOR, "#field-id_gender-1").click()
     driver.find_element(By.CSS_SELECTOR, "#field-firstname").send_keys("Harry")
     driver.find_element(By.CSS_SELECTOR, "#field-lastname").send_keys("Potter")
-    driver.find_element(By.CSS_SELECTOR, "#field-email").send_keys("potter1@gmail.com")  # change it after first use
+    driver.find_element(By.CSS_SELECTOR, "#field-email").send_keys("testowy@kursy.ct8.pl")  # change it after first use
     driver.find_element(By.CSS_SELECTOR, "#field-password").send_keys("12345")
     driver.find_element(By.CSS_SELECTOR, "#customer-form > div > div:nth-child(8) > div.col-md-6 > span > label > "
                                          "input[type=checkbox]").click()
