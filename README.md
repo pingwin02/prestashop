@@ -9,6 +9,7 @@
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
 - [RUN SELENIUM TESTS](#run-selenium-tests)
+- [GENERATE SSL CERT](#generate-ssl-cert)
 - [AUTHORS](#authors)
 
 ## TECH-STACK:
@@ -101,7 +102,7 @@
    email:
 
    ```
-   hermiona@ceo.com
+   prestashop@kursy.ct8.pl
    ```
 
    password:
@@ -159,6 +160,12 @@
    ```
    python main.py
    ```
+
+## Generate ssl cert
+
+```
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout prestashop.key -out prestashop.crt
+```
 
 ## AUTHORS:
 
