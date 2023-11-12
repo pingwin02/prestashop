@@ -26,9 +26,14 @@ services:
     depends_on:
       - mariadb
     ports:
+      - 443:443
       - 8080:80
     volumes:
       - ./src:/var/www/html
+      - ./prestashop.crt:/etc/ssl/certs/prestashop.crt
+      - ./prestashop.key:/etc/ssl/private/prestashop.key
+      - ./prestashop-ssl.conf:/etc/apache2/sites-available/prestashop-ssl.conf
+    command: /bin/bash -c "cp /etc/ssl/certs/prestashop.crt /usr/local/share/ca-certificates/prestashop.crt && update-ca-certificates && a2enmod ssl && a2ensite prestashop-ssl && apache2-foreground"
     networks:
       - prestashop_network
 networks:

@@ -56,15 +56,21 @@
    cd website
    ```
 
-3. Create and run containers using:
+3. Generate ssl certificate using:
+
+   ```
+   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout prestashop.key -out prestashop.crt -subj "/C=PL/ST=Greater Poland Voivodeship/L=Poznan/O=Komputerowe Imperium Hermiony/OU=Komputerowe Imperium Hermiony/CN=localhost"
+   ```
+
+4. Create and run containers using:
 
    ```
    docker compose up -d
    ```
 
-4. Open your web browser and go to http://localhost:8080
+5. Open your web browser and go to https://localhost
 
-5. To stop and remove containers use:
+6. To stop and remove containers use:
 
    ```
    docker compose down
@@ -94,14 +100,14 @@
 
 ## ADMIN PANEL:
 
-1. Open your web browser and go to http://localhost:8080/admin123
+1. Open your web browser and go to https://localhost/admin123
 
 2. Login using:
 
    email:
 
    ```
-   hermiona@ceo.com
+   prestashop@kursy.ct8.pl
    ```
 
    password:

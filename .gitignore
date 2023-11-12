@@ -8,3 +8,5 @@ website/db_dump
 website/secrets.json
 *.tar.gz
 scraper_results/images
+*.key
+*.crt
