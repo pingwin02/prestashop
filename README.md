@@ -158,6 +158,13 @@
    python main.py
    ```
 
+## ADDITIONAL INFO
+
+You can test mail service by typing:
+```
+localhost:8025
+```
+
 ## AUTHORS:
 
 - Maciej Szefler - 188614
