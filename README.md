@@ -18,7 +18,8 @@
 3. Docker
 4. Python
 5. Scrapy
-6. Google Drive API
+6. Selenium
+7. Google Drive API
 
 ## HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP:
 
@@ -144,9 +145,10 @@
    cd selenium_tests
    ```
 
-3. Install virtual environment and packages.
+3. Install chromedriver, virtual environment and packages.
 
    ```
+   sudo apt install chromium-chromedriver
    python3 -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
