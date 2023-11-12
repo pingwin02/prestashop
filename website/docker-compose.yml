@@ -36,25 +36,5 @@ services:
     command: /bin/bash -c "a2enmod ssl && a2ensite prestashop-ssl && apache2-foreground"
     networks:
       - prestashop_network
-  selenium-hub:
-    platform: linux/x86_64
-    container_name: selenium-hub
-    image: selenium/hub:4.15.0-20231102
-    restart: unless-stopped
-    ports:
-      - "4442:4442"
-      - "4443:4443"
-      - "4444:4444"
-  chrome:
-    platform: linux/x86_64
-    container_name: selenium-chrome
-    image: selenium/node-chrome:4.15.0-20231102
-    shm_size: 2gb
-    depends_on:
-      - selenium-hub
-    environment:
-      - SE_EVENT_BUS_HOST=selenium-hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
 networks:
   prestashop_network:
