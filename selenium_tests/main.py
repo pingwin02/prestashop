@@ -64,7 +64,7 @@ def test() -> None:
             WebDriverWait(driver, 10).until(ec.element_to_be_clickable(
                 (By.CSS_SELECTOR, f"#category-{j} > a"))).click()
             product_index = i if j == 5 else i+1
-            product_index = product_index + 1 if j == 5 and i > 5 else product_index
+            product_index = product_index + 1 if j == 5 and i >= 5 else product_index
             driver.find_element(By.CSS_SELECTOR, f'#js-product-list > div.products.row > div:nth-child({product_index}) > article'
                                                  f' > div > div.thumbnail-top > a > img').click()
             add_to_cart(amount=amounts[amounts_index])
