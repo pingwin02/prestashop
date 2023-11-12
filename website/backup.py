@@ -152,11 +152,15 @@ if __name__ == '__main__':
     if OPERATION == 'upload':
         print('[0] CREATE AND UPLOAD WEBSITE BACKUP')
         print('[1] CREATE AND UPLOAD IMAGES BACKUP')
+        print('[2] UPLOAD CUSTOM FILE')
         option = int(input('Enter option (default: 0): ') or 0)
         if option == 0:
             upload_website_backup()
         elif option == 1:
             upload_images_backup()
+        elif option == 2:
+            filename = input('Enter filename: ')
+            upload_to_google_drive(filename)
     elif OPERATION == 'download':
         download_from_google_drive()
     elif OPERATION == 'delete':
