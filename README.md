@@ -9,7 +9,6 @@
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
 - [RUN SELENIUM TESTS](#run-selenium-tests)
-- [GENERATE SSL CERT](#generate-ssl-cert)
 - [AUTHORS](#authors)
 
 ## TECH-STACK:
@@ -57,15 +56,22 @@
    cd website
    ```
 
-3. Create and run containers using:
+3. Generate ssl certificate using:
+
+   ```
+   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout prestashop.key -out prestashop.crt -subj "/C=PL/ST=Greater Poland Voivodeship/L=Poznan/O=Komputerowe Imperium Hermiony/OU=Komputerowe Imperium Hermiony/CN=localhost"
+
+   ```
+
+4. Create and run containers using:
 
    ```
    docker compose up -d
    ```
 
-4. Open your web browser and go to https://localhost
+5. Open your web browser and go to https://localhost
 
-5. To stop and remove containers use:
+6. To stop and remove containers use:
 
    ```
    docker compose down
@@ -160,12 +166,6 @@
    ```
    python main.py
    ```
-
-## Generate ssl cert
-
-```
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout prestashop.key -out prestashop.crt
-```
 
 ## AUTHORS:
 
