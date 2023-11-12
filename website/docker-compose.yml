@@ -56,14 +56,5 @@ services:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-  mailhog:
-    platform: linux/x86_64
-    image: mailhog/mailhog
-    container_name: 'mailhog'
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-    networks:
-      - prestashop_network
 networks:
   prestashop_network:
