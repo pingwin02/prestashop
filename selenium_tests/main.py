@@ -18,39 +18,36 @@ driver = webdriver.Chrome(options=chrome_options)
 
 
 def add_to_cart(amount: int) -> None:
-    for i in range(amount - 1):
-        driver.find_element(
-            By.CSS_SELECTOR,
-            "#add-to-cart-or-refresh > div.product-add-to-cart.js-product-add-to-cart > div > div.qty "
-            "> div > span.input-group-btn-vertical > "
-            "button.btn.btn-touchspin.js-touchspin.bootstrap-touchspin-up",
-        ).click()
+    add = driver.find_element(
+        By.CSS_SELECTOR,
+        "#add-to-cart-or-refresh > div.product-add-to-cart.js-product-add-to-cart > div > div.qty "
+        "> div > span.input-group-btn-vertical > "
+        "button.btn.btn-touchspin.js-touchspin.bootstrap-touchspin-up",
+    )
+
+    for _ in range(amount - 1):
+        add.click()
+
     driver.find_element(
         By.CSS_SELECTOR,
         "#add-to-cart-or-refresh > div.product-add-to-cart.js-product-add-to-cart > "
         "div > div.add > button",
     ).click()
-    WebDriverWait(driver, 7).until(
-        ec.element_to_be_clickable(
-            (
-                By.CSS_SELECTOR,
-                "#blockcart-modal > div > div > div.modal-header > button > span > i",
-            )
-        )
-    ).click()
 
 
-def delete_from_cart() -> None:
-    driver.find_element(
-        By.CSS_SELECTOR, "#_desktop_cart > div > div > a > span.hidden-sm-down"
-    ).click()
-    driver.find_element(
-        By.CSS_SELECTOR,
-        "#main > div > div.cart-grid-body.col-xs-12.col-lg-8 > div > "
-        "div.cart-overview.js-cart > ul > li > div > "
-        "div.product-line-grid-right.product-line-actions.col-md-5.col-xs-12 > div > "
-        "div.col-md-2.col-xs-2.text-xs-right > div > a > i",
-    ).click()
+def delete_from_cart(amount: int) -> None:
+    for _ in range(amount):
+        driver.find_element(
+            By.CSS_SELECTOR, "#_desktop_cart > div > div > a "
+        ).click()
+
+        driver.find_element(
+            By.CSS_SELECTOR,
+            "#main > div > div.cart-grid-body.col-xs-12.col-lg-8 > div > "
+            "div.cart-overview.js-cart > ul > li > div > "
+            "div.product-line-grid-right.product-line-actions.col-md-5.col-xs-12 > div > "
+            "div.col-md-2.col-xs-2.text-xs-right > div > a",
+        ).click()
 
 
 def register_user() -> None:
@@ -85,21 +82,21 @@ def test() -> None:
     amounts = [3, 2, 1, 2, 3, 1, 3, 2, 1, 1]
     amounts_index = 0
     for j in [5, 30]:
+        menu = driver.find_element(By.CSS_SELECTOR, "#category-2 > a")
+        submenu = driver.find_element(By.CSS_SELECTOR, f"#category-{j} > a")
+        ActionChains(driver).move_to_element(menu).click(submenu).perform()
+
         for i in range(1, 7):
-            menu = driver.find_element(By.CSS_SELECTOR, "#category-2 > a")
-            ActionChains(driver).move_to_element(menu).perform()
-            WebDriverWait(driver, 10).until(
-                ec.element_to_be_clickable(
-                    (By.CSS_SELECTOR, f"#category-{j} > a"))
-            ).click()
             product_index = i if j == 5 else i + 1
             product_index = product_index + 1 if j == 5 and i >= 5 else product_index
             driver.find_element(
                 By.CSS_SELECTOR,
-                f"#js-product-list > div.products.row > div:nth-child({product_index}) > article"
-                f" > div > div.thumbnail-top > a > img",
+                f"#js-product-list > div.products.row > div:nth-child({product_index}) > article > div > "
+                f"div.thumbnail-top > a > img"
             ).click()
+
             add_to_cart(amount=amounts[amounts_index])
+            driver.back()
             amounts_index += 1
             if j == 30 and i == 4:
                 break
@@ -118,8 +115,7 @@ def test() -> None:
     add_to_cart(amount=1)
 
     # c. - delete 3 items from cart
-    for _ in range(3):
-        delete_from_cart()
+    delete_from_cart(amount=3 )
 
     # d. register new user
     register_user()
