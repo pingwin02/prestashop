@@ -8,17 +8,15 @@ services:
     environment:
       - MYSQL_DATABASE=presta_database
       - MYSQL_ROOT_PASSWORD=admin
-    ports:
-      - 3306:3306
     volumes:
       - ./db_dump:/docker-entrypoint-initdb.d
       - ./database:/var/lib/mysql
-    networks:
-      - prestashop_network
   prestashop:
     platform: linux/x86_64
     container_name: prestashop
-    image: prestashop/prestashop:1.7.8-apache
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     user: root
     environment:
@@ -30,11 +28,3 @@ services:
       - 8080:80
     volumes:
       - ./src:/var/www/html
-      - ./prestashop.crt:/etc/ssl/certs/prestashop.crt
-      - ./prestashop.key:/etc/ssl/private/prestashop.key
-      - ./prestashop-ssl.conf:/etc/apache2/sites-available/prestashop-ssl.conf
-    command: /bin/bash -c "cp /etc/ssl/certs/prestashop.crt /usr/local/share/ca-certificates/prestashop.crt && update-ca-certificates && a2enmod ssl && a2ensite prestashop-ssl && apache2-foreground"
-    networks:
-      - prestashop_network
-networks:
-  prestashop_network:

@@ -4,7 +4,6 @@ import re
 import json
 import prestapyt
 import traceback
-import mysql.connector
 from tqdm import tqdm
 from random import randint
 from threading import Semaphore
@@ -72,29 +71,15 @@ def add_images_to_product(scraped_id: int, product_id: int) -> None:
         ])
 
 
-def update_quantities() -> None:
-    conn = mysql.connector.connect(
-        host="0.0.0.0", user="root", password="admin", database="presta_database"
-    )
-    cursor = conn.cursor()
-
-    sql_query = """
-        UPDATE ps_stock_available 
-        SET quantity = %s
-        WHERE id_stock_available = %s
-        """
-
-    cursor.execute("SELECT id_stock_available FROM ps_stock_available")
-    all_ids = cursor.fetchall()
-
-    for id in all_ids:
-        random_quantity = randint(0, 10)
-        cursor.execute(sql_query, (random_quantity, id[0]))
-
-    conn.commit()
-
-    cursor.close()
-    conn.close()
+def change_quantity(product_id: int) -> None:
+    schema_id = prestashop.search("stock_availables", options={
+        "filter[id_product]": product_id
+    })[0]
+    stock_available_schema = prestashop.get(
+        "stock_availables", resource_id=schema_id)
+    stock_available_schema["stock_available"]["quantity"] = randint(0, 10)
+    stock_available_schema["stock_available"]["depends_on_stock"] = 0
+    prestashop.edit("stock_availables", stock_available_schema)
 
 
 def add_product(product: dict) -> None:
@@ -157,6 +142,7 @@ def add_product(product: dict) -> None:
             "value"] = f"{product['description']}<br><br>Masa produktu: {weight} kg."
         product_id = prestashop.add("products", product_schema)[
             "prestashop"]["product"]["id"]
+        change_quantity(product_id)
         add_images_to_product(scraped_id=product["id"], product_id=product_id)
     except Exception as e:
         print(f"Error while adding product: {product['id']}")
@@ -256,4 +242,3 @@ if __name__ == "__main__":
 
     add_categories(clean=True)
     add_products(clean=True)
-    update_quantities()

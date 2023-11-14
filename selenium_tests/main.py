@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-DEFAULT_LINK = "http://localhost:8080"
+DEFAULT_LINK = "https://localhost"
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--ignore-ssl-errors=yes")
@@ -54,7 +54,8 @@ def delete_from_cart() -> None:
 
 
 def register_user() -> None:
-    driver.find_element(By.CSS_SELECTOR, "#_desktop_user_info > div > a > span").click()
+    driver.find_element(
+        By.CSS_SELECTOR, "#_desktop_user_info > div > a > span").click()
     driver.find_element(By.CSS_SELECTOR, "#content > div > a").click()
     driver.find_element(By.CSS_SELECTOR, "#field-id_gender-1").click()
     driver.find_element(By.CSS_SELECTOR, "#field-firstname").send_keys("Harry")
@@ -73,7 +74,8 @@ def register_user() -> None:
         "#customer-form > div > div:nth-child(10) > div.col-md-6 > span > label > "
         "input[type=checkbox]",
     ).click()
-    driver.find_element(By.CSS_SELECTOR, "#customer-form > footer > button").click()
+    driver.find_element(
+        By.CSS_SELECTOR, "#customer-form > footer > button").click()
 
 
 def test() -> None:
@@ -87,7 +89,8 @@ def test() -> None:
             menu = driver.find_element(By.CSS_SELECTOR, "#category-2 > a")
             ActionChains(driver).move_to_element(menu).perform()
             WebDriverWait(driver, 10).until(
-                ec.element_to_be_clickable((By.CSS_SELECTOR, f"#category-{j} > a"))
+                ec.element_to_be_clickable(
+                    (By.CSS_SELECTOR, f"#category-{j} > a"))
             ).click()
             product_index = i if j == 5 else i + 1
             product_index = product_index + 1 if j == 5 and i >= 5 else product_index

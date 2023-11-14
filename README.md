@@ -3,9 +3,9 @@
 ## LIST OF CONTENTS:
 
 - [TECH-STACK](#tech-stack)
-- [HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP](#how-to-uploaddownload-website-backup)
-- [HOW TO RUN WEBSITE](#how-to-run-website)
-- [HOW TO RUN API SCRIPT](#how-to-run-api-script)
+- [UPLOAD/DOWNLOAD WEBSITE BACKUP](#uploaddownload-website-backup)
+- [RUN WEBSITE](#run-website)
+- [RUN API SCRIPT](#run-api-script)
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
 - [RUN SELENIUM TESTS](#run-selenium-tests)
@@ -21,7 +21,7 @@
 6. Selenium
 7. Google Drive API
 
-## HOW TO UPLOAD/DOWNLOAD WEBSITE BACKUP:
+## UPLOAD/DOWNLOAD WEBSITE BACKUP:
 
 1. Move to the `website` directory.
 
@@ -47,7 +47,7 @@
 
 4. Script will automatically create archive with backup and upload it to the Google Drive or download it and extract to the `website` directory.
 
-## HOW TO RUN WEBSITE:
+## RUN WEBSITE:
 
 1. Install Docker.
 2. Move to the `website` directory.
@@ -76,7 +76,7 @@
    docker compose down
    ```
 
-## HOW TO RUN API SCRIPT
+## RUN API SCRIPT
 
 1. Move to the `api_service` directory.
 
