@@ -115,7 +115,7 @@ def test() -> None:
     add_to_cart(amount=1)
 
     # c. - delete 3 items from cart
-    delete_from_cart(amount=3 )
+    delete_from_cart(amount=3)
 
     # d. register new user
     register_user()
