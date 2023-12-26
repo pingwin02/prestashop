@@ -1,0 +1,29 @@
+services:
+  prestashop:
+    image: ryslek/be_186044_prestashop:latest
+    user: root
+    environment:
+      - PS_DEV_MODE=1
+      - DB_SERVER=student-swarm01.maas
+      - DB_PORT=3306
+      - DB_NAME=BE_186044
+      - DB_USER=root
+      - DB_PASSWD=student
+    ports:
+      - 18604:443
+      - 18605:80
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+        window: 70s
+      placement:
+        constraints:
+          - node.hostname == student-swarm01
+    volumes:
+      - BE_186044:/var/www/html
+    entrypoint: ["./init_script.sh", "apache2-foreground"]
+
+volumes:
+  BE_186044:

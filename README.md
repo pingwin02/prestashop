@@ -9,6 +9,7 @@
 - [ADMIN PANEL](#admin-panel)
 - [RUN SCRAPER](#run-scraper)
 - [RUN SELENIUM TESTS](#run-selenium-tests)
+- [RUN PRESTASHOP ON VPS SERVER](#run-prestashop-on-vps)
 - [AUTHORS](#authors)
 
 ## TECH-STACK:
@@ -164,6 +165,90 @@
 
    ```
    python main.py
+   ```
+
+## RUN PRESTASHOP ON VPS
+
+1. Install OpenVPN on Windows or Tunnelblick on MacOS and configure VPN
+   http://starter.eti.pg.gda.pl/openvpn/
+
+2. Enable VPN and login to the broker server
+
+   ```
+   ssh rsww@172.20.83.101
+
+   Password: qwe123
+   ```
+
+3. While on broker server, login to the destination server
+   ```
+   ssh hdoop@student-swarm01.maas
+
+   Password: qwe123  
+   ```
+
+   You can provide any swarm server from swarm01 - swarm04
+
+4. Go the the project destination:
+   ```
+   cd /opt/storage/actina15-20/block-storage/students/projects/studentsswarm-services/BE_186044
+   ```
+
+5. To deploy the app use:
+   ```
+   docker pull ryslek/be_186044_prestashop:latest
+   docker stack deploy -c docker-compose.yml BE_186044 --with-registry-auth 
+   ```
+
+6. After deploying the app on any swarm claster, create proxy tunnel.
+
+   6.1 Locate the node on which the app is served. It is under the 'node' section.
+   ```
+   docker service ps BE_186044
+   ```
+   6.2 Create tunnel. You need to do this on your local terminal. Try not to allocate typical ports to ABC as it may collapse with your default computer ports (like 80, 443, 22, 21 etc.):
+   ```
+   ssh -L ABC:student-swarm0S.maas:XYZ rsww@172.20.83.101
+   ```
+
+   Where:
+
+      S - node where the app was deployed. It can be either 1, 2, 3 or 4
+
+      ABC - port you want to listen on
+
+      XYZ - port you want to forward you requests to
+   
+   Example:
+   ```
+   ssh -L 18604:student-swarm01.maas:18604 rsww@172.20.83.101
+   ```
+
+   6.3 On your browser, go to the localhost:ABC to see the app located on the swarm server on the port XYZ.
+
+7. OPTIONAL - You can tunnel any service located on any swarm service. E.g. if you want to copy files from your computer to the swarm directory destination, create tunnel for typical SCP port (22).
+
+   ```
+   ssh -L 2222:student-swarm01.maas:22 rsww@172.20.83.101
+   ```
+
+   Than transfer any files you want:
+   ```
+   scp -r -P 2222 path/to/file/from hdoop@localhost:/opt/storage/actina15-20/block-storage/students/projects/students-swarm-services/BE_186044
+   ```
+8. While creating new docker image on public repository:
+
+   8.1 Delete cache files
+   ```
+   sudo rm -rf src/var/cache/*    
+   ```
+   8.2 Modify database config in src/app/config/parameters.php
+   ```
+   'database_host' => 'student-swarm01.maas',
+   'database_port' => '3306',
+   'database_name' => 'BE_186044',
+   'database_user' => 'root',
+   'database_password' => 'student',
    ```
 
 ## AUTHORS:
