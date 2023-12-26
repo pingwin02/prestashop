@@ -217,7 +217,7 @@
 
       ABC - port you want to listen on
 
-      XYZ - port you want to forward you requests to
+      XYZ - port you want to forward your requests to
    
    Example:
    ```
