@@ -226,13 +226,13 @@
 
    6.3 On your browser, go to the localhost:ABC to see the app located on the swarm server on the port XYZ.
 
-7. OPTIONAL - You can tunnel any service located on any swarm service. E.g. if you want to copy files from your computer to the swarm directory destination, create tunnel for typical SCP port (22).
+7. OPTIONAL - You can tunnel any service located on any swarm server. E.g. if you want to copy files from your computer to the swarm directory destination, create tunnel for typical SCP port (22).
 
    ```
    ssh -L 2222:student-swarm01.maas:22 rsww@172.20.83.101
    ```
 
-   Than transfer any files you want:
+   Then transfer any files you want:
    ```
    scp -r -P 2222 path/to/file/from hdoop@localhost:/opt/storage/actina15-20/block-storage/students/projects/students-swarm-services/BE_186044
    ```

@@ -12,7 +12,8 @@ WORKDIR /var/www/html
 # remove cache under var/cache/prod and var/cache/dev
 RUN rm -rf var/cache/* && \
     chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html
+    chmod -R 755 /var/www/html && \
+    chmod -R 777 var/cache var/logs
 
 # remove install folder
 RUN rm -rf install
