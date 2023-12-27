@@ -1,14 +1,9 @@
 services:
   prestashop:
-    image: ryslek/be_186044_prestashop:latest
+    image: ryslek/be_186044_prestashop:1.0
     user: root
     environment:
       - PS_DEV_MODE=1
-      - DB_SERVER=student-swarm01.maas
-      - DB_PORT=3306
-      - DB_NAME=BE_186044
-      - DB_USER=root
-      - DB_PASSWD=student
     ports:
       - 18604:443
       - 18605:80
@@ -18,12 +13,17 @@ services:
         delay: 5s
         max_attempts: 2
         window: 70s
-      placement:
-        constraints:
-          - node.hostname == student-swarm01
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     volumes:
       - BE_186044:/var/www/html
-    entrypoint: ["./init_script.sh", "apache2-foreground"]
-
+    networks:
+      - admin-mysql_default
+    entrypoint: /init_script.sh
+networks:
+  admin-mysql_default:
+    external: true
 volumes:
   BE_186044:
