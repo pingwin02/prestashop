@@ -2,12 +2,12 @@ version: "3"
 services:
   mariadb:
     platform: linux/x86_64
-    container_name: mariadb
+    container_name: db
     image: mariadb:10.5
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=presta_database
-      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_DATABASE=BE_186044
+      - MYSQL_ROOT_PASSWORD=student
     volumes:
       - ./db_dump:/docker-entrypoint-initdb.d
       - ./database:/var/lib/mysql
@@ -24,7 +24,7 @@ services:
     depends_on:
       - mariadb
     ports:
-      - 443:443
-      - 8080:80
+      - 18604:443
+      - 18605:80
     volumes:
       - ./src:/var/www/html

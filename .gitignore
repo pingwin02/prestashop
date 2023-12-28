@@ -3,8 +3,10 @@ venv
 .DS_Store
 .idea
 website/src
+website/prod/src
 website/database
 website/db_dump
+website/prod/db_dump
 website/secrets.json
 *.tar.gz
 scraper_results/images

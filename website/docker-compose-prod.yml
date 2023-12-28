@@ -1,0 +1,29 @@
+services:
+  prestashop:
+    image: pingwin02/prestashop:latest
+    user: root
+    environment:
+      - PS_DEV_MODE=1
+    ports:
+      - 18604:443
+      - 18605:80
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+        window: 70s
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    volumes:
+      - BE_186044:/var/www/html
+    networks:
+      - admin-mysql_default
+    entrypoint: /init_script.sh
+networks:
+  admin-mysql_default:
+    external: true
+volumes:
+  BE_186044:
