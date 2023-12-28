@@ -204,10 +204,12 @@
    wget https://raw.githubusercontent.com/pingwin02/prestashop/main/website/deploy.sh && chmod +x deploy.sh
    ```
 
-   5.2 Stop and remove service:
+   5.2 Remove service and volume if exists:
 
    ```
-   wip
+   docker service rm BE_186044_prestashop
+   docker volume ls
+   docker volume rm <volume_name>
    ```
 
    5.3 Drop database if exists:
@@ -237,12 +239,24 @@
      exit;
      ```
 
-6. After deploying the app on any swarm claster, create proxy tunnel.
+   5.4 Start service:
+
+   ```
+   ./deploy.sh
+   ```
+
+   5.5 Check if service is running:
+
+   ```
+   docker stack ps BE_186044
+   ```
+
+6. After deploying the app on any swarm cluster, create proxy tunnel.
 
    6.1 Locate the node on which the app is served. It is under the 'node' section.
 
    ```
-   docker service ps BE_186044
+   docker service ps BE_186044_prestashop
    ```
 
    6.2 Create tunnel. You need to do this on your local terminal. Try not to allocate typical ports to ABC as it may collapse with your default computer ports (like 80, 443, 22, 21 etc.):
@@ -257,13 +271,15 @@
 
    ABC - port you want to listen on
 
-   XYZ - port you want to forward your requests to
+   XYZ - port you want to forward your requests to (in our case `18604`)
 
    Example:
 
    ```
    ssh -L 18604:student-swarm01.maas:18604 rsww@172.20.83.101
    ```
+
+   Password: `qwe123`
 
    6.3 On your browser, go to the localhost:ABC to see the app located on the swarm server on the port XYZ.
 
