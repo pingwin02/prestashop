@@ -1,6 +1,6 @@
 services:
   prestashop:
-    image: ryslek/be_186044_prestashop:1.0
+    image: pingwin02/prestashop:latest
     user: root
     environment:
       - PS_DEV_MODE=1

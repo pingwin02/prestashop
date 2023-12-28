@@ -172,7 +172,7 @@
 1. Install OpenVPN on Windows or Tunnelblick on MacOS and configure VPN
    http://starter.eti.pg.gda.pl/openvpn/
 
-2. Enable VPN and login to the broker server
+2. Enable VPN and login to the bastion host
 
    ```
    ssh rsww@172.20.83.101
@@ -180,7 +180,7 @@
    Password: qwe123
    ```
 
-3. While on broker server, login to the destination server
+3. While on bastion host, login to the destination server
 
    ```
    ssh hdoop@student-swarm01.maas
@@ -196,12 +196,46 @@
    cd /opt/storage/actina15-20/block-storage/students/projects/students-swarm-services/BE_186044
    ```
 
-5. To deploy the app use:
+5. Prepare and start service:
+
+   5.1 Download `deploy.sh` script:
 
    ```
-   docker pull ryslek/be_186044_prestashop:latest
-   docker stack deploy -c docker-compose.yml BE_186044 --with-registry-auth
+   wget https://raw.githubusercontent.com/pingwin02/prestashop/main/website/deploy.sh && chmod +x deploy.sh
    ```
+
+   5.2 Stop and remove service:
+
+   ```
+   wip
+   ```
+
+   5.3 Drop database if exists:
+
+   - Find container id on which mysql is running:
+
+     ```
+     docker ps
+     ```
+
+   - Run mysql command in the container (password is `student`):
+
+     ```
+     docker exec -it <container_id> mysql -u root -p
+     ```
+
+   - List databases:
+
+     ```
+     show databases;
+     ```
+
+   - If database `BE_186044` exists, drop it:
+
+     ```
+     drop database BE_186044;
+     exit;
+     ```
 
 6. After deploying the app on any swarm claster, create proxy tunnel.
 
@@ -243,24 +277,6 @@
 
    ```
    scp -r -P 2222 path/to/file/from hdoop@localhost:/opt/storage/actina15-20/block-storage/students/projects/students-swarm-services/BE_186044
-   ```
-
-8. While creating new docker image on public repository:
-
-   8.1 Delete cache files
-
-   ```
-   sudo rm -rf src/var/cache/*
-   ```
-
-   8.2 Modify database config in src/app/config/parameters.php
-
-   ```
-   'database_host' => 'student-swarm01.maas',
-   'database_port' => '3306',
-   'database_name' => 'BE_186044',
-   'database_user' => 'root',
-   'database_password' => 'student',
    ```
 
 ## AUTHORS:

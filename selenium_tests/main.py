@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-DEFAULT_LINK = "https://localhost"
+DEFAULT_LINK = "https://localhost:18604"
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--ignore-ssl-errors=yes")

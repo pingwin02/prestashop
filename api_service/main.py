@@ -9,7 +9,7 @@ from random import randint
 from threading import Semaphore
 from concurrent.futures import ThreadPoolExecutor
 
-DEFAULT_LINK = "http://localhost:8080/api/"
+DEFAULT_LINK = "http://localhost:18605/api/"
 SCRIPT_DIR = os.path.dirname(__file__).split("api_service")[0]
 
 semaphore = Semaphore(1)

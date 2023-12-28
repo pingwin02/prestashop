@@ -107,7 +107,7 @@ def upload_website_backup():
 
     os.system('sudo chmod -R 777 src db_dump')
     os.system(
-        'docker exec mariadb mysqldump --user=root --password=admin presta_database > db_dump/db.sql')
+        'docker exec db mysqldump --user=root --password=student BE_186044 > db_dump/db.sql')
     create_tar(FILENAME, ['src', 'db_dump'])
     upload_to_google_drive(FILENAME)
     option = input('Delete created archive? (y/n): ')
