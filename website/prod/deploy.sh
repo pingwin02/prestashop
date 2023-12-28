@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IMAGE_NAME="ryslek/be_186044_prestashop:1.0"
-COMPOSE_URL="https://github.com/pingwin02/prestashop/blob/Add-production-config/website/prod/docker-compose.yml"
+COMPOSE_URL="https://raw.githubusercontent.com/pingwin02/prestashop/Add-production-config/website/prod/docker-compose.yml"
 STACK_NAME="BE_186044"
 
 echo "Pulling docker image..."
