@@ -23,8 +23,13 @@ services:
       - PS_DEV_MODE=1
     depends_on:
       - mariadb
+      - memcached
     ports:
       - 18604:443
       - 18605:80
     volumes:
       - ./src:/var/www/html
+  memcached:
+    image: memcached:1.6.10
+    container_name: BE_186044_memcached
+    restart: unless-stopped
