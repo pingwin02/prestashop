@@ -1,12 +1,11 @@
 services:
   prestashop:
-    image: pingwin02/prestashop:latest
+    image: ryslek/be_186044_prestashop:1.0
     user: root
     environment:
       - PS_DEV_MODE=1
     ports:
       - 18604:443
-      - 18605:80
     depends_on:
       - memcached
     deploy:
@@ -27,7 +26,7 @@ services:
   memcached:
     image: memcached:1.6.10
     ports:
-      - 11211:11211
+      - 18859:11211
     deploy:
       restart_policy:
         condition: on-failure
