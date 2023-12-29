@@ -7,3 +7,7 @@ COPY ./prestashop-ssl.conf /etc/apache2/sites-available/prestashop-ssl.conf
 
 RUN update-ca-certificates && a2enmod ssl && a2ensite prestashop-ssl
 
+RUN apt-get update && \
+    apt-get install -y libmemcached-dev zlib1g-dev && \
+    pecl install memcached && \
+    docker-php-ext-enable memcached

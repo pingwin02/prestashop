@@ -20,11 +20,19 @@ services:
     restart: unless-stopped
     user: root
     environment:
-      - PS_DEV_MODE=1
+      - PS_DEV_MODE=0
+      - PS_DEBUG_PROFILING=0
     depends_on:
       - mariadb
+      - memcached
     ports:
       - 18604:443
       - 18605:80
     volumes:
       - ./src:/var/www/html
+  memcached:
+    image: memcached:1.6.10
+    container_name: memcached
+    restart: unless-stopped
+    ports:
+      - 11211:11211

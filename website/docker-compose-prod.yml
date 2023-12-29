@@ -7,6 +7,8 @@ services:
     ports:
       - 18604:443
       - 18605:80
+    depends_on:
+      - memcached
     deploy:
       restart_policy:
         condition: on-failure
@@ -20,10 +22,28 @@ services:
     volumes:
       - BE_186044:/var/www/html
     networks:
+      - BE_186044_network
       - admin-mysql_default
     entrypoint: /init_script.sh
+  memcached:
+    image: memcached:1.6.10
+    ports:
+      - 11211:11211
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+        window: 140s
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - BE_186044_network
 networks:
   admin-mysql_default:
     external: true
+  BE_186044_network:
 volumes:
   BE_186044:
