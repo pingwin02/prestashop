@@ -35,4 +35,4 @@ services:
     container_name: BE_186044_memcached
     restart: unless-stopped
     ports:
-      - 11211:11211
+      - 18859:11211
