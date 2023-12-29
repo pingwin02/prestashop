@@ -1,9 +1,7 @@
 services:
   prestashop:
-    image: ryslek/be_186044_prestashop:1.0
+    image: pingwin02/prestashop:latest
     user: root
-    environment:
-      - PS_DEV_MODE=1
     ports:
       - 18604:443
     depends_on:
@@ -18,6 +16,8 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
+    volumes:
+      - BE_186044:/var/www/html
     networks:
       - admin-mysql_default
     entrypoint: /init_script.sh

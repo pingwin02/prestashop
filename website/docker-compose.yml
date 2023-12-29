@@ -20,8 +20,7 @@ services:
     restart: unless-stopped
     user: root
     environment:
-      - PS_DEV_MODE=0
-      - PS_DEBUG_PROFILING=0
+      - PS_DEV_MODE=1
     depends_on:
       - mariadb
       - memcached

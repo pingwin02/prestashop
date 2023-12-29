@@ -204,12 +204,14 @@
    wget https://raw.githubusercontent.com/pingwin02/prestashop/main/website/deploy.sh && chmod +x deploy.sh
    ```
 
-   5.2 Remove service and volume if exists:
+   5.2 Remove stack, volume and image if exists:
 
    ```
-   docker service rm BE_186044_prestashop
+   docker stack rm BE_186044
    docker volume ls
    docker volume rm <volume_name>
+   docker image ls
+   docker image rm <image_name>
    ```
 
    5.3 Drop database if exists:
