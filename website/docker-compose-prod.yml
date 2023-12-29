@@ -22,7 +22,6 @@ services:
     volumes:
       - BE_186044:/var/www/html
     networks:
-      - BE_186044_network
       - admin-mysql_default
     entrypoint: /init_script.sh
   memcached:
@@ -40,10 +39,9 @@ services:
           cpus: '0.5'
           memory: 512M
     networks:
-      - BE_186044_network
+      - admin-mysql_default
 networks:
   admin-mysql_default:
     external: true
-  BE_186044_network:
 volumes:
   BE_186044:

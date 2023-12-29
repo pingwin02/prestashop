@@ -32,7 +32,7 @@ services:
       - ./src:/var/www/html
   memcached:
     image: memcached:1.6.10
-    container_name: memcached
+    container_name: BE_186044_memcached
     restart: unless-stopped
     ports:
       - 11211:11211

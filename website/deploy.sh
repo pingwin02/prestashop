@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IMAGE_NAME="pingwin02/prestashop:latest"
-COMPOSE_URL="https://raw.githubusercontent.com/pingwin02/prestashop/main/website/docker-compose-prod.yml"
+IMAGE_NAME="ryslek/BE_186044_prestashop:1.0"
+COMPOSE_URL="https://raw.githubusercontent.com/pingwin02/prestashop/Add-prestashop-caching/website/docker-compose-prod.yml"
 INIT_URL="https://raw.githubusercontent.com/pingwin02/prestashop/main/website/init_script.sh"
 STACK_NAME="BE_186044"
 
