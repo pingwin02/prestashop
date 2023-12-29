@@ -34,5 +34,3 @@ services:
     image: memcached:1.6.10
     container_name: BE_186044_memcached
     restart: unless-stopped
-    ports:
-      - 18859:11211

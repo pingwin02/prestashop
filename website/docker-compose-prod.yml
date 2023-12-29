@@ -25,8 +25,6 @@ services:
     entrypoint: /init_script.sh
   memcached:
     image: memcached:1.6.10
-    ports:
-      - 18859:11211
     deploy:
       restart_policy:
         condition: on-failure
